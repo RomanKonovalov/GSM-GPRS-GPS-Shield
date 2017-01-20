@@ -62,7 +62,7 @@ int InetGSM::httpGET(const char* server, int port, const char* path, char* resul
      return res;
 }
 
-int InetGSM::httpPOST(const char* server, int port, const char* path, const char* parameters, char* result, int resultlength)
+int InetGSM::httpPOST(const char* server, int port, const char* path, const char* parameters, char* result, int resultlength, const char* token)
 {
      boolean connected=false;
      int n_of_at=0;
@@ -92,7 +92,10 @@ int InetGSM::httpPOST(const char* server, int port, const char* path, const char
      gsm.SimpleWrite(server);
      gsm.SimpleWrite("\r\n");
      gsm.SimpleWrite("User-Agent: Arduino\r\n");
-     gsm.SimpleWrite("Content-Type: application/x-www-form-urlencoded\r\n");
+     gsm.SimpleWrite("Authorization: Bearer ");
+	 gsm.SimpleWrite(token);
+	 gsm.SimpleWrite("\n");
+	 gsm.SimpleWrite("Content-Type: application/json\n");;
      gsm.SimpleWrite("Content-Length: ");
      itoa(strlen(parameters),itoaBuffer,10);
      gsm.SimpleWrite(itoaBuffer);
@@ -435,7 +438,7 @@ int InetGSM::connectTCP(const char* server, int port)
      gsm.SimpleWrite("\",");
      gsm.SimpleWriteln(port);
 
-     switch(gsm.WaitResp(1000, 200, "OK")) {
+     switch(gsm.WaitResp(4000, 200, "OK")) {
      case RX_TMOUT_ERR:
           return 0;
           break;
